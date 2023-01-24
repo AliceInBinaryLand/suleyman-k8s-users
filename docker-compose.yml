@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  app:
+    image: 'suleymanbolat/k8slearning:userservice'
+    build:
+      context: .
+    container_name: userserviceapp
+    depends_on:
+      - db
+    environment:
+      - dburl=jdbc:postgresql://localhost:5432/users
+      - dbuser=user
+      - SPRING_DATASOURCE_PASSWORD=12345
+
+  db:
+    image: 'postgres:latest'
+    container_name: db
+    environment:
+      - POSTGRES_DB=users
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
