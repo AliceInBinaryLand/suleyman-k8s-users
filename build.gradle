@@ -28,7 +28,12 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.21.jre7'
+
+	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.6'
+	testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.17.6'
+	testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.6'
+
+
 
 }
 

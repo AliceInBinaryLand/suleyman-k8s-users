@@ -78,7 +78,7 @@ public class UserController {
         Optional<User> userRecord =  userRepository.findById(id);
         if(userRecord.isPresent()){
             User user = userRecord.get();
-            user.increasePostCount();
+            user.decreasePostCount();
             userRepository.save(user);
             return new ResponseEntity<>( null , HttpStatus.OK);
         }else {

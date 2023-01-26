@@ -1,7 +1,10 @@
 package com.epam.suleymank8susers.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 @Data
 @Entity
