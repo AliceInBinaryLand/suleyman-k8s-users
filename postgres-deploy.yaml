@@ -22,9 +22,9 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: post-db-config
+  name: user-db-config
   labels:
-    name: post-db-config
+    name: user-db-config
   namespace: k8s-program
 data:
   POSTGRES_DB: "users"
@@ -40,7 +40,7 @@ spec:
   selector:
     matchLabels:
       app: users-db
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
