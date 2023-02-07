@@ -57,6 +57,22 @@ spec:
           name: userservice
           ports:
             - containerPort: 8080
+          livenessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            httpGet:
+              scheme: HTTP
+              path: /healthCheck
+              port: 8080
+          readinessProbe:
+            initialDelaySeconds: 2
+            periodSeconds: 2
+            timeoutSeconds: 2
+            httpGet:
+              scheme: HTTP
+              path: /healthCheck
+              port: 8080
           volumeMounts:
             - name: db-credentials
               mountPath: "/etc/db-credentials"

@@ -29,6 +29,37 @@ metadata:
 data:
   POSTGRES_DB: "users"
 ---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: users-db-persistent-volume
+  labels:
+    type: local
+    namespace: k8s-program
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 100M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/users-db/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: users-db
+  name: users-db-pv-claim
+  namespace: k8s-program
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100M
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,10 +82,26 @@ spec:
           name: postgres
           ports:
             - containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 5
           volumeMounts:
             - name: db-credentials
               mountPath: "/etc/db-credentials"
               readOnly: true
+            - name: users-db-pv-claim
+              mountPath: "/var/lib/postgresql/data"
           env:
             - name: POSTGRES_DB
               valueFrom:
@@ -75,7 +122,9 @@ spec:
         - name: db-credentials
           secret:
             secretName: db-credentials
-
+        - name: users-db-pv-claim
+          persistentVolumeClaim:
+            claimName: users-db-pv-claim
 
 
 

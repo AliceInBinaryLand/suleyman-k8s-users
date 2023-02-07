@@ -85,4 +85,9 @@ public class UserController {
             return new ResponseEntity<>(null , HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping(path = "/healthCheck")
+    public ResponseEntity healthCheck(){
+        return new ResponseEntity(null , HttpStatus.OK);
+    }
 }
