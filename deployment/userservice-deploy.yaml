@@ -1,0 +1,103 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: k8s-program
+  labels:
+    name: k8s-program
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-app-service
+  labels:
+    app: user-app-service
+  namespace: k8s-program
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+      protocol: TCP
+  selector:
+    app: user-app
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-app-config
+  labels:
+    name: user-app-config
+  namespace: k8s-program
+data:
+  # property-like keys; each key maps to a simple value
+  dburl: "jdbc:postgresql://user-db-service:5432/users"
+  dbuser: "user"
+  dbpassword: "12345"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-app
+  labels:
+    app: user-app
+  namespace: k8s-program
+spec:
+  selector:
+    matchLabels:
+      app: user-app
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: user-app
+    spec:
+      containers:
+        - image: suleymanbolat/k8slearning:userservice
+          name: userservice
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            httpGet:
+              scheme: HTTP
+              path: /healthCheck
+              port: 8080
+          readinessProbe:
+            initialDelaySeconds: 2
+            periodSeconds: 2
+            timeoutSeconds: 2
+            httpGet:
+              scheme: HTTP
+              path: /healthCheck
+              port: 8080
+          volumeMounts:
+            - name: db-credentials
+              mountPath: "/etc/db-credentials"
+              readOnly: true
+          env:
+            - name: dburl
+              valueFrom:
+                configMapKeyRef:
+                  name: user-app-config
+                  key: dburl
+            - name: dbuser
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+            - name: dbpassword
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+      volumes:
+        - name: db-credentials
+          secret:
+            secretName: db-credentials
+
+
+
+

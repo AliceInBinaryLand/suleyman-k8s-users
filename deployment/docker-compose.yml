@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  app:
+    image: 'suleymanbolat/k8slearning:userservice'
+    build:
+      context: .
+    container_name: userserviceapp
+    depends_on:
+      - db
+    environment:
+      - dburl=jdbc:postgresql://userdb:5432/users
+      - dbuser=user
+      - dbpassword=12345
+    ports:
+      - "8080:8080"
+
+  db:
+    image: 'postgres:latest'
+    container_name: userdb
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=users
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
