@@ -60,3 +60,13 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "mychart.taskFour" -}}
+  labels:
+    version: 1.0.0
+    date: {{ now | htmlDate }}
+    dburl: "jdbc:postgresql://user-db-service:5432/users"
+{{- end }}
+
+
+
